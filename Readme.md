@@ -45,3 +45,198 @@ A: { AES: 2 }, B: { COM: 2 }, C: { SOL: 2 }, D: { AGI: 2 }
 5. 代码工整，注释清楚，无明显AI痕迹（5分）
 
 
+1. System Overview
+
+This project implements a complete animal personality testing system in C.
+It evaluates users across seven personality dimensions:
+
+DOM – Dominance
+
+STR – Strategy
+
+COM – Community
+
+SOL – Solitude
+
+AGI – Agility
+
+SEC – Security
+
+AES – Aesthetic
+
+The system collects answers from multiple-choice questions, calculates personal scores, converts them into weight ratios, and finally determines which animal personality is closest using Sum of Squared Differences (SSD).
+
+2. Login System (Secure Authentication)
+
+The login system follows strict rules:
+
+✔ Username must be 8 digits.
+✔ Password must be the last 4 digits of the username.
+
+Example:
+Username: 24681357 → Password: 1357
+
+The program extracts the required 4 digits automatically and compares them with the user input.
+
+❌ Wrong Password Policy
+
+User can enter wrong password up to 4 times.
+
+After 4 failures → Account Locked.
+
+🔐 Admin Unlock
+
+Only admin can unlock using:
+
+Username: admin
+
+Password: 6666
+
+After login, the admin automatically resets user attempts.
+
+This prevents brute force attacks and ensures safe access.
+
+3. Quiz System (Question, Option, Scoring)
+
+The testing system contains multiple-choice questions.
+Each question has 4 options: A, B, C, D.
+
+Each option increases exactly one of the seven personality traits.
+
+For example, for Question 1:
+
+Option	Trait	Score
+A	DOM	+2
+B	STR	+2
+C	SOL	+2
+D	AGI	+2
+
+The score table is stored using a 3D array:
+
+score[question][option][trait]
+
+4. Skip Question Feature
+
+The user can enter:
+
+A/B/C/D → Normal scoring
+
+S → Skip question
+
+No score is added
+
+Question number recorded in a “skipped list”
+
+At the end, system prints:
+
+Total answered questions
+
+List of skipped questions
+
+This improves user freedom and test flexibility.
+
+5. Shuffle System (Unique Test Every Time)
+
+The program shuffles:
+
+Questions
+
+Options
+
+Corresponding scoring rules
+
+This ensures:
+
+Every attempt feels different
+
+Users cannot memorize positions
+
+Prevents cheating in repeated attempts
+
+Shuffling is done using rand() and time(0) as random seeds.
+
+6. Score Summary
+
+After the user finishes all questions:
+
+✔ Raw Scores Printed
+
+Example:
+
+DOM: 12
+STR: 8
+COM: 15
+SOL: 4
+AGI: 9
+SEC: 11
+AES: 6
+
+✔ Weight Ratios
+
+Each trait is converted into a ratio:
+
+ratio[i] = trait_score[i] / total_score
+
+
+Ratios are shown with 2 decimal places:
+
+DOM: 0.12
+STR: 0.10
+COM: 0.23
+...
+
+
+These ratios represent your internal personality structure.
+
+7. Animal Personality Matching (SSD Algorithm)
+
+Each animal has a reference weight ratio for all 7 traits.
+
+Example for DOG:
+
+1/15 , 1/15 , 5/15 , 0/15 , 3/15 , 4/15 , 1/15
+
+SSD = Sum of Squared Differences
+SSD = Σ (user_ratio[i] – animal_ratio[i])²
+
+
+A smaller value means a stronger similarity.
+
+The program calculates SSD for:
+
+DOG
+
+CAT
+
+RABBIT
+
+LION
+
+Then finds and prints the closest match:
+
+Closest Animal: DOG
+
+
+This makes the result mathematically accurate and unbiased.
+
+8. Code Structure Overview
+✔ Data Structures
+
+Animal stores name and 7 ratios.
+
+User stores login info and raw trait scores.
+
+✔ Functions
+
+login() — verifies username/password & lock logic
+
+shuffle_questions() — randomizes questions & options
+
+take_quiz() — handles answering, scoring, skipping
+
+find_face() — calculates SSD & finds closest animal
+
+try_again() — repeats quiz if user wants
+
+✔ Main Function Flow
+login → quiz → scoring → ratio calculation → animal matching → ask retry
