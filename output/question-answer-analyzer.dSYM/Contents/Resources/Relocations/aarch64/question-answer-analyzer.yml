@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/macbookairm1/Documents/AssesmentTask/output/question-answer-analyzer'
+relocations:     []
+...
