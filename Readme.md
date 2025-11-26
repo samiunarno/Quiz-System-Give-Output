@@ -45,4 +45,3 @@ A: { AES: 2 }, B: { COM: 2 }, C: { SOL: 2 }, D: { AGI: 2 }
 5. 代码工整，注释清楚，无明显AI痕迹（5分）
 
 
-english version 
