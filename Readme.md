@@ -1,0 +1,242 @@
+电子学会25级C语言考核题与评分标准
+
+动物塑形象测试系统
+
+预备知识1：选项计分方式
+
+动物塑形象测试以选择题的形式实现，为了统计不同的形象特征，定义了七个不同维度的变量，分别是DOM:支配, STR:策略, COM:社群, SOL:独行, AGI:灵动, SEC:安稳, AES:审美。每个问题的四个选项会对应七个维度中的四个变量，当用户完成答题后，其中一个变量会得到对应的分数。以第一题为例： （题目集在群文件里）
+
+1.世界是一片漆黑的森林，你选择成为（  ）
+
+A: 森林本身，感受每一片树叶。
+
+B: 在林间温暖的篝火。
+
+C: 隐藏在古树根下深不见底的古井。
+
+D: 一阵穿过所有缝隙的风。
+
+如果选择了A，则去查找第一题的选项计分规则（选项计分规则在群文件里）。
+
+A: { AES: 2 }, B: { COM: 2 }, C: { SOL: 2 }, D: { AGI: 2 }
+
+可知，如果选择了A，会给AES（审美）这个变量加2分。重复这个过程，直到答完60道题，系统会统计各个变量获得的分数并进行统计分析
+
+预备知识2：差值平方和算法
+
+在找最接近的动物类型时，需要将计算得到的权重比例与各个动物对应的参考权重比例进行对比，此时推荐使用差值平方和算法。
+
+示例：
+
+1.求得用户的DOM:支配, STR:策略, COM:社群, SOL:独行, AGI:灵动, SEC:安稳, AES:审美比例分别为0.12 0.11 0.23 0.31 0.12 0.110.00。
+
+2.先与狗的进行对比。查看参考权重和性格特征对照表 （参考权重和性格特征对照表在群文件里）可知狗的七个维度比例为DOM: 1, STR: 1, COM: 5, SOL: 0, AGI: 3, SEC: 4, AES: 1 ，则狗的参考权重比例为1/15   1/15   5/15  0/15 3/15  4/15  1/15（15=1+1+5+0+3+4+1）
+
+3.计算用户数据与狗的参考权重的差值平方和，创建数组x,则x[0]=（0.12-1/15 )²+（0.11-1/15 )²+（0.23-5/15 )²+（0.31-0/15 )²+（0.12-3/15 )²+（0.11-4/15 )² +（0.00-1/15 )²4.分别计算用户数据与其他动物参考权重的差值平方和存入x数组，并寻找数组中最小的值对应的动物
+
+一．基础部分：
+
+1. 设计一个动物塑形象测试系统，运行程序后，程序会要求输入账号和密码进行登录才能开始答题。账号是任意8位数字，密码是账号的后四位。用户输入账号后，程序会自动抽取账号后四位作为密码，并与用户输入的密码进行比较，输入错误会提示密码错误，连续错四次会封锁账户，此时登录管理员账号密码（账户admin 密码6666）即可自动解锁被封锁的账户。（40分）
+2. 进入系统答题时，用户使用键盘键入自己的选项，答完60道题后，系统会显示你的账号对应的七个项目的单得分（包括DOM:支配, STR:策略, COM:社群, SOL:独行, AGI:灵动, SEC:安稳, AES:审美）和每一项对应的权重比例（权重比例=单项得分/七项的总得分，保留两位小数，如0.32）。（20分）
+3. 在题2的基础上，支持跳过题目的功能，用户选择跳过后，此题对所有变量的加分为0。并在题2的基础上额外显示已经作答的题目的数量和未答的题目对应的题号。（10分）
+二．发挥部分：
+
+4. 将计算得到的权重比例与各个动物对应的参考权重比例进行对比，找到最接近的那个动物并输出对应的动物名称和性格特征。（25分）
+5. 代码工整，注释清楚，无明显AI痕迹（5分）
+
+
+1. System Overview
+
+This project implements a complete animal personality testing system in C.
+It evaluates users across seven personality dimensions:
+
+DOM – Dominance
+
+STR – Strategy
+
+COM – Community
+
+SOL – Solitude
+
+AGI – Agility
+
+SEC – Security
+
+AES – Aesthetic
+
+The system collects answers from multiple-choice questions, calculates personal scores, converts them into weight ratios, and finally determines which animal personality is closest using Sum of Squared Differences (SSD).
+
+2. Login System (Secure Authentication)
+
+The login system follows strict rules:
+
+✔ Username must be 8 digits.
+✔ Password must be the last 4 digits of the username.
+
+Example:
+Username: 24681357 → Password: 1357
+
+The program extracts the required 4 digits automatically and compares them with the user input.
+
+❌ Wrong Password Policy
+
+User can enter wrong password up to 4 times.
+
+After 4 failures → Account Locked.
+
+🔐 Admin Unlock
+
+Only admin can unlock using:
+
+Username: admin
+
+Password: 6666
+
+After login, the admin automatically resets user attempts.
+
+This prevents brute force attacks and ensures safe access.
+
+3. Quiz System (Question, Option, Scoring)
+
+The testing system contains multiple-choice questions.
+Each question has 4 options: A, B, C, D.
+
+Each option increases exactly one of the seven personality traits.
+
+For example, for Question 1:
+
+Option	Trait	Score
+A	DOM	+2
+B	STR	+2
+C	SOL	+2
+D	AGI	+2
+
+The score table is stored using a 3D array:
+
+score[question][option][trait]
+
+4. Skip Question Feature
+
+The user can enter:
+
+A/B/C/D → Normal scoring
+
+S → Skip question
+
+No score is added
+
+Question number recorded in a “skipped list”
+
+At the end, system prints:
+
+Total answered questions
+
+List of skipped questions
+
+This improves user freedom and test flexibility.
+
+5. Shuffle System (Unique Test Every Time)
+
+The program shuffles:
+
+Questions
+
+Options
+
+Corresponding scoring rules
+
+This ensures:
+
+Every attempt feels different
+
+Users cannot memorize positions
+
+Prevents cheating in repeated attempts
+
+Shuffling is done using rand() and time(0) as random seeds.
+
+6. Score Summary
+
+After the user finishes all questions:
+
+✔ Raw Scores Printed
+
+Example:
+
+DOM: 12
+STR: 8
+COM: 15
+SOL: 4
+AGI: 9
+SEC: 11
+AES: 6
+
+✔ Weight Ratios
+
+Each trait is converted into a ratio:
+
+ratio[i] = trait_score[i] / total_score
+
+
+Ratios are shown with 2 decimal places:
+
+DOM: 0.12
+STR: 0.10
+COM: 0.23
+...
+
+
+These ratios represent your internal personality structure.
+
+7. Animal Personality Matching (SSD Algorithm)
+
+Each animal has a reference weight ratio for all 7 traits.
+
+Example for DOG:
+
+1/15 , 1/15 , 5/15 , 0/15 , 3/15 , 4/15 , 1/15
+
+SSD = Sum of Squared Differences
+SSD = Σ (user_ratio[i] – animal_ratio[i])²
+
+
+A smaller value means a stronger similarity.
+
+The program calculates SSD for:
+
+DOG
+
+CAT
+
+RABBIT
+
+LION
+
+Then finds and prints the closest match:
+
+Closest Animal: DOG
+
+
+This makes the result mathematically accurate and unbiased.
+
+8. Code Structure Overview
+✔ Data Structures
+
+Animal stores name and 7 ratios.
+
+User stores login info and raw trait scores.
+
+✔ Functions
+
+login() — verifies username/password & lock logic
+
+shuffle_questions() — randomizes questions & options
+
+take_quiz() — handles answering, scoring, skipping
+
+find_face() — calculates SSD & finds closest animal
+
+try_again() — repeats quiz if user wants
+
+✔ Main Function Flow
+login → quiz → scoring → ratio calculation → animal matching → ask retry
